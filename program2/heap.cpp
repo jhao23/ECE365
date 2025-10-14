@@ -106,6 +106,8 @@ int heap::remove(const std::string &id, int *pKey, void *ppData)
     idHash.remove(data[position].id);
     //lazy deletion and overwriting of node
     data[position] = data[size];
+    idHash.setPointer(data[position].id, &data[position]);
+    // there are cases where percolate might never be called or percolate doesn't update the hashtable, so we have to update the location here
     size--;
     // decreasing the size here allows the percolate to function properly (node is now outside the consideration of percolate)
 
