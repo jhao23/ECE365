@@ -6,10 +6,14 @@
 
 using namespace std;
 
+// Main matrix for dynamic programmign part
+// (i, j) entry represents whether first i letters of first word and first j letters of second word can be
+// combined to make string merge of first i+j letters of third word 
 vector<vector<bool>> wordmatrix(1001, vector<bool>(1001, 0));
 
 int main()
 {
+    // Input/ouput processing stuff
     ifstream inputFile;
     ofstream outputFile;
 
@@ -28,9 +32,9 @@ int main()
     {   
         int l1 = word1.size();
         int l2 = word2.size();
+        // quick check for string length to rule out easy cases 
         if (l1 + l2 != word3.size())
         {
-            cout << "incongruous lengths\n";
             outputFile << "*** NOT A MERGE ***\n";    
             continue;
         }
@@ -60,6 +64,10 @@ int main()
             }
         }
 
+        // Fill in rest of entries with previous entries
+        // Mostly checks if the new letter is the same as any of the last letters of the other two words
+        // If so, check if the matching word (minus a letter) with the other word can make the previous portion
+        // of the third word
         for (int i = 1; i <= l1; i++)
         {
             for (int j = 1; j <= l2; j++)
@@ -78,17 +86,10 @@ int main()
                 }
             }
         }
-        
-        for (int i = 0; i <= l1; i++)
-        {
-            for (int j = 0; j <= l2; j++)
-            {
-                cout << wordmatrix[i][j] << " ";
-            }
-            cout << "\n";
-        }
 
         // retrieve the word if possible
+        // basically traverses ones of matrix from bottom right to top left of the matrix
+        // the direction of each step indicates which word the letter came from
         if (wordmatrix[l1][l2])
         {
             string capitalword = "";
@@ -98,6 +99,8 @@ int main()
             
             while (index1 != 0 || index2 != 0)
             {
+                // we check for the second word first because we want to prioritize putting those letters
+                // as far back as possible
                 if ((index2 != 0) && wordmatrix[index1][index2 - 1])
                 {
                     capitalword = word2[index2 - 1] + capitalword;
@@ -113,7 +116,6 @@ int main()
         }
         else
         {
-            cout << "last entry false\n";
             outputFile << "*** NOT A MERGE ***\n";
         }
     }
